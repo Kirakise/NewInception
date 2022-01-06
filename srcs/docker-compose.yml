@@ -1,0 +1,56 @@
+version: '3'
+services:
+    mariadb:
+        build: ./requirements/mariadb
+        volumes:
+            - ~/data/db:/var/lib/mysql
+        restart: always
+        environment:
+            DB_LOGIN: "${DB_LOGIN}"
+            DB_PASS: "${DB_PASS}"
+        ports: 
+            - "3306:3306"
+        networks:
+            mynet:
+        env_file: .env
+               
+
+    wordpress:
+        build: ./requirements/wordpress
+        depends_on:
+            - mariadb
+        volumes:
+            - ~/data/wp:/var/www/wordpress
+        restart: always
+        environment:
+            WP_LOGIN: "${WP_LOGIN}"
+            WP_PASS: "${WP_PASS}"
+            WPU_1LOGIN: "${WPU_1LOGIN}"
+            WPU_1PASS: "${WPU_1PASS}"
+            DB_LOGIN: "${DB_LOGIN}"
+            DB_PASS: "${DB_PASS}"
+        ports:
+            - "9000:9000"
+        networks:
+            mynet:
+        env_file: .env
+    nginx:
+        build: ./requirements/nginx
+        restart: always
+        depends_on:
+            - wordpress
+        ports:
+             - "443:443"
+        volumes:
+            - ~/data/wp:/var/www/wordpress
+        networks:
+            mynet:
+        extra_hosts:
+            - "rcaraway.42.fr:127.0.0.1"
+        env_file: .env
+
+networks:
+    mynet:
+        driver: bridge
+
+
