@@ -11,3 +11,8 @@ clean: down
 	cd ./srcs && docker system prune; 
 
 reload: down up 
+
+fclean: down
+	a=$(sudo docker ps -a q)
+	sudo docker rm 
+	sudo docker image prune

@@ -3,8 +3,7 @@ services:
     mariadb:
         build: ./requirements/mariadb
         volumes:
-            - ~/data/db:/var/lib/mysql
-        restart: always
+            - dbv:/var/lib/mysql
         environment:
             DB_LOGIN: "${DB_LOGIN}"
             DB_PASS: "${DB_PASS}"
@@ -20,8 +19,7 @@ services:
         depends_on:
             - mariadb
         volumes:
-            - ~/data/wp:/var/www/wordpress
-        restart: always
+            - wpv:/var/www/wordpress
         environment:
             WP_LOGIN: "${WP_LOGIN}"
             WP_PASS: "${WP_PASS}"
@@ -36,13 +34,12 @@ services:
         env_file: .env
     nginx:
         build: ./requirements/nginx
-        restart: always
         depends_on:
             - wordpress
         ports:
              - "443:443"
         volumes:
-            - ~/data/wp:/var/www/wordpress
+            - wpv:/var/www/wordpress
         networks:
             mynet:
         extra_hosts:
@@ -53,4 +50,17 @@ networks:
     mynet:
         driver: bridge
 
+volumes:
+  wpv:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/home/rcaraway/data/wp'
+  dbv:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/home/rcaraway/data/db'
 

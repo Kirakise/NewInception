@@ -1,7 +1,7 @@
 FROM debian:buster 
 
 RUN apt-get update
-RUN apt-get install -y mariadb-server procps; 
+RUN apt-get install -y mariadb-server; 
 
 COPY tools/setup.sh . 
 
